@@ -1,0 +1,11 @@
+{
+  "name": "linkedin-resume-tailor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chrome MV3 extension that tailors your base resume to a LinkedIn job description.",
+  "scripts": {
+    "test": "node test/run.js",
+    "test:core": "node test/test-core.js",
+    "test:pdf": "node test/test-pdf.js"
+  }
+}

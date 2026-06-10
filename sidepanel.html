@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LinkedIn Resume Tailor</title>
+  <link rel="stylesheet" href="sidepanel.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="dot"></span>
+      <strong>Resume Tailor</strong>
+      <span class="muted">for LinkedIn</span>
+    </div>
+    <nav class="tabs">
+      <button data-tab="job" class="active">Job</button>
+      <button data-tab="resume">Resume</button>
+      <button data-tab="base">Base</button>
+      <button data-tab="instructions">Instructions</button>
+      <button data-tab="settings">Settings</button>
+    </nav>
+  </header>
+
+  <!-- ===== JOB TAB ===== -->
+  <section id="tab-job" class="tab active">
+    <div id="status" class="status muted">Waiting for a LinkedIn job…</div>
+
+    <div id="job-card" class="card hidden">
+      <h2 id="job-title">—</h2>
+      <div class="muted small">
+        <span id="job-company">—</span>
+        <span id="job-meta"></span>
+      </div>
+      <div class="muted xsmall">
+        <span id="job-source"></span>
+      </div>
+      <div id="external-warn" class="warn hidden">
+        ⚠️ LinkedIn didn't expose the description. Paste the JD from the employer's site below.
+        <div><a id="external-link" href="#" target="_blank" rel="noopener">Open the employer page →</a></div>
+      </div>
+      <details id="jd-details">
+        <summary>Job description · <span id="jd-len">0</span> chars</summary>
+        <pre id="job-desc" class="jd"></pre>
+      </details>
+    </div>
+
+    <details id="jd-paste-wrap" class="paste-card">
+      <summary>Paste a job description (overrides auto-detected JD)</summary>
+      <textarea id="jd-paste" rows="6" placeholder="Paste the job description here…"></textarea>
+      <div class="row">
+        <button id="btn-use-pasted">Use pasted JD</button>
+        <button id="btn-clear-pasted" title="Clear and use auto-detected">Clear</button>
+        <span id="paste-status" class="muted small"></span>
+      </div>
+    </details>
+
+    <div class="row">
+      <button id="btn-generate" class="primary" disabled>⚡ Generate tailored resume</button>
+      <button id="btn-cancel" class="hidden" title="Cancel generation">✗ Cancel</button>
+      <button id="btn-rescan" title="Re-read the LinkedIn page">↻ Rescan</button>
+    </div>
+    <div id="gen-status" class="muted small"></div>
+  </section>
+
+  <!-- ===== RESUME TAB ===== -->
+  <section id="tab-resume" class="tab">
+    <div class="toolbar">
+      <div class="view-toggle">
+        <button data-view="edit" class="active">Edit</button>
+        <button data-view="render">Rendered</button>
+        <button data-view="latex">LaTeX</button>
+        <button data-view="split">Split</button>
+      </div>
+      <div class="spacer"></div>
+      <select id="resume-history" title="Load a previous generation">
+        <option value="">History ▾</option>
+      </select>
+      <button id="btn-copy" title="Copy LaTeX source">📋 Copy</button>
+      <button id="btn-download-tex" title="Download .tex">⬇ .tex</button>
+      <button id="btn-download-pdf" class="primary" title="Compile LaTeX and download PDF">⬇ PDF</button>
+    </div>
+    <div id="resume-empty" class="muted center-pad">
+      No tailored resume yet.<br>Open a LinkedIn job and click <strong>Generate</strong>.
+    </div>
+    <div id="resume-pane" class="resume-pane hidden">
+      <textarea id="resume-editor" spellcheck="true" placeholder="Your tailored resume in LaTeX…"></textarea>
+      <div id="resume-rendered" class="rendered"></div>
+      <pre id="resume-latex" class="latex-pre"></pre>
+    </div>
+  </section>
+
+  <!-- ===== BASE RESUME TAB ===== -->
+  <section id="tab-base" class="tab">
+    <p class="muted small">
+      Your <strong>base resume</strong> in LaTeX. Edit it once — every tailored version is generated from this.
+    </p>
+    <textarea id="base-editor" spellcheck="true"></textarea>
+    <div class="row">
+      <button id="btn-save-base" class="primary">💾 Save base resume</button>
+      <button id="btn-load-sample-base">Load sample</button>
+      <span id="base-status" class="muted small"></span>
+    </div>
+  </section>
+
+  <!-- ===== INSTRUCTIONS TAB ===== -->
+  <section id="tab-instructions" class="tab">
+    <p class="muted small">
+      <strong>Instructions</strong> the model follows when tailoring your resume. Edit freely — these guide the model.
+    </p>
+    <textarea id="instructions-editor" spellcheck="true"></textarea>
+    <div class="row">
+      <button id="btn-save-instructions" class="primary">💾 Save instructions</button>
+      <button id="btn-reset-instructions">Reset to default</button>
+      <span id="instructions-status" class="muted small"></span>
+    </div>
+  </section>
+
+  <!-- ===== SETTINGS TAB ===== -->
+  <section id="tab-settings" class="tab">
+    <p class="muted small">
+      Bring your own LLM — any OpenAI-compatible Chat Completions endpoint.
+      Your key stays in <code>chrome.storage.local</code> on this device only.
+    </p>
+
+    <label>Provider preset</label>
+    <select id="cfg-preset">
+      <option value="blackbox">Blackbox</option>
+      <option value="openai">OpenAI</option>
+      <option value="openrouter">OpenRouter</option>
+      <option value="custom">Custom (OpenAI-compatible)</option>
+    </select>
+
+    <label>API endpoint</label>
+    <input id="cfg-endpoint" type="text" placeholder="https://api.blackbox.ai/v1/chat/completions" />
+
+    <label>Model</label>
+    <input id="cfg-model" type="text" placeholder="blackboxai/anthropic/claude-sonnet-4.6" />
+
+    <label>API key</label>
+    <input id="cfg-key" type="password" placeholder="sk-…" />
+
+    <div class="row" style="margin-top: 6px;">
+      <button id="btn-save-cfg" class="primary">💾 Save settings</button>
+      <button id="btn-test-cfg">🔌 Test connection</button>
+      <span id="cfg-status" class="muted small"></span>
+    </div>
+  </section>
+
+  <script src="lib/resume-core.js"></script>
+  <script src="sidepanel.js"></script>
+</body>
+</html>
