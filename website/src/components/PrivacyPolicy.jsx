@@ -70,7 +70,8 @@ We have no affiliation with any of these services.`,
   },
   {
     title: 'Contact',
-    content: `For questions about this privacy policy, reach out to rlrahulkanojia@gmail.com or open an issue at github.com/rlrahulkanojia/linkedin-resume-tailor.`,
+    html: true,
+    content: `For questions about this privacy policy, reach out to <a href="mailto:rlrahulkanojia@gmail.com" class="text-accent hover:underline">rlrahulkanojia@gmail.com</a> or open an issue on <a href="https://github.com/rlrahulkanojia/linkedin-resume-tailor" target="_blank" rel="noopener" class="text-accent hover:underline">GitHub</a>.`,
   },
 ]
 
@@ -97,8 +98,11 @@ export default function PrivacyPolicy() {
             <AnimatedSection key={section.title} delay={i * 0.05}>
               <div>
                 <h2 className="text-xl font-bold mb-3">{section.title}</h2>
-                {section.content && (
+                {section.content && !section.html && (
                   <p className="text-text-secondary leading-relaxed whitespace-pre-line">{section.content}</p>
+                )}
+                {section.content && section.html && (
+                  <p className="text-text-secondary leading-relaxed" dangerouslySetInnerHTML={{ __html: section.content }} />
                 )}
                 {section.items && (
                   <ul className="space-y-2 mt-1">
